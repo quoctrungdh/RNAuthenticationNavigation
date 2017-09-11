@@ -8,16 +8,16 @@ class SignUp extends Component {
   state = {
     username: '',
     password: ''
-  }
+	}
 
   handleSignUp = () => {
-    const { username, password } = this.state;
     fetch(`${API_URL}/login`, {
-      method: 'POST',
-      body: JSON.stringify({
-        username,
-        password
-      })
+			method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.state)
     }).then(res => res.json())
     .then(res => console.log(res))
     .catch(err => console.log(err))
