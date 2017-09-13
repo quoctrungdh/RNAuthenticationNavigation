@@ -7,9 +7,7 @@ class Profile extends Component {
   handleSignOut = () => {
     const { navigation } = this.props;
     onSignOut()
-      .then(() => {
-        navigation.navigate('SignedOut');
-      })
+      .then(navigation.navigate('SignedOut'))
   }
   render() {
     return (

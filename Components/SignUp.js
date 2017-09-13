@@ -1,34 +1,45 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Button, FormLabel, FormInput } from 'react-native-elements';
 
-import { API_URL } from '../constants';
+import { API_URL, HEADERS } from '../constants';
+import { onSignIn } from '../auth';
 
 class SignUp extends Component {
   state = {
     username: '',
-    password: ''
-	}
+    password: '',
+    isLoadingIndicatorShow: false
+  }
 
-  handleSignUp = () => {
-    fetch(`${API_URL}/login`, {
-			method: "POST",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(this.state)
-    }).then(res => res.json())
-    .then(res => console.log(res))
-    .catch(err => console.log(err))
+  handleSignInSuccess = ({success, token}) => {
+    if (!success) return;
+    const { navigation } = this.props;
+    onSignIn(token)
+      .then(() => {
+        navigation.navigate("SignedIn")
+        this.setState({
+          isLoadingIndicatorShow: false
+        })
+      })
   }
 
   handleSignIn = () => {
-    const { navigation } = this.props;
-    navigation.navigate("SignIn")
+    this.setState({
+      isLoadingIndicatorShow: true
+    })
+    fetch(`${API_URL}/login`, {
+			method: "POST",
+      headers: HEADERS,
+      body: JSON.stringify(this.state)
+    }).then(res => res.json())
+    .then(this.handleSignInSuccess)
+    .catch(err => err)
+    // TODO: handle login error
   }
 
   render() {
+    const { isLoadingIndicatorShow } = this.state;
     return (
       <View style={styles.container}>
         <FormLabel>Username</FormLabel>
@@ -46,14 +57,13 @@ class SignUp extends Component {
         />
         <Button
           raised
-          onPress={this.handleSignUp}
-          title="Sign up"
-        />
-        <Button
-          raised
           onPress={this.handleSignIn}
           title="Sign in"
         />
+        {
+          isLoadingIndicatorShow &&
+          <ActivityIndicator />
+        }
       </View>
     )
   }

@@ -13,7 +13,7 @@ class App extends Component {
   componentWillMount() {
     isSignedIn()
       .then(res => this.setState({ isSignedIn: res }))
-      .catch(err => alert(err));
+      .catch(err => err);
   }
 
   render() {
